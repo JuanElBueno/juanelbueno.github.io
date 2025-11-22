@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Confeti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ANIMACIÓN DE GLOBOS */
+        .globo {
+            position: fixed;
+            bottom: -150px;
+            font-size: 60px;
+            animation: subirGlobos 6s linear forwards;
+            pointer-events: none;
+        }
+
+        @keyframes subirGlobos {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-120vh); opacity: 0; }
+        }
+
+        #barra {
+            width: 100%;
+            background-color: #333;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 20px;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        #progreso {
+            width: 0;
+            height: 30px;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            animation: cambioColor 2s linear infinite;
+        }
+
+        @keyframes cambioColor {
+            0% { background-color: #4caf50; }
+            50% { background-color: #2196f3; }
+            100% { background-color: #4caf50; }
+        }
+
+        #contador {
+            font-size: 28px;
+            margin-top: 10px;
+        }
+
+        #revelacion { font-size: 20px; margin-top: 20px; }
+        #formulario { margin-top: 20px; }
+
+        .inputField {
+            padding: 10px; margin: 5px;
+            border-radius: 5px; border: 1px solid #ccc;
+        }
+
+        #botonAdivinar {
+            padding: 10px 20px; margin: 5px; border-radius: 5px;
+            border: none; background-color: #4caf50; color: white;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        #botonAdivinar:hover { transform: scale(1.05); background-color: #45a049; }
+        #botonAdivinar:active { transform: scale(0.95); }
+
+        #themeToggle {
+            position: fixed; bottom: 10px; left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px; border: none;
+            border-radius: 5px; background-color: #333; color: white;
+            cursor: pointer;
+        }
+
+        .fecha-cumple {
+            font-weight: bold; color: #4caf50; font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Cuenta regresiva para mi cumpleaños de Mecha</h2>
+
+<div id="barra">
+    <div id="progreso">0%</div>
+</div>
+
+<div id="contador">Faltan: <span id="tiempo-restante"></span></div>
+
+<div id="revelacion">Fecha de cumpleaños actual:
+    <span id="fecha-cumple" class="fecha-cumple">??/??/????</span>
+</div>
+
+<div id="formulario">
+    <input type="text" id="inputDia" class="inputField" placeholder="Día (1-31)">
+    <input type="text" id="inputMes" class="inputField" placeholder="Mes (1-12)">
+    <input type="text" id="inputAnio" class="inputField" placeholder="Año (YYYY)">
+    <button id="botonAdivinar" onclick="adivinar()">Adivinar</button>
+</div>
+
+<button id="themeToggle" onclick="toggleTheme()">Oscuro</button>
+
+
+<script>
+    // FECHA DE CUMPLEAÑOS
+    let fechaCumpleanos = new Date(2024, 10, 24);
+
+    let diaRevelado = false;
+    let mesRevelado = false;
+    let anioRevelado = false;
+    let intervalId = null;
+
+    // 🎈 COLORES DE GLOBOS
+    const emojisGlobos = ["🎈", "🎉", "🎊", "💛", "💙", "💚", "❤️"];
+
+    // 🎈 FUNCIÓN PARA CREAR UN GLOBO ANIMADO
+    function lanzarGlobos() {
+        for (let i = 0; i < 15; i++) {
+            const globo = document.createElement("div");
+            globo.classList.add("globo");
+            globo.style.left = Math.random() * 100 + "vw";
+            globo.style.animationDuration = (5 + Math.random() * 3) + "s";
+            globo.textContent = emojisGlobos[Math.floor(Math.random() * emojisGlobos.length)];
+            document.body.appendChild(globo);
+            setTimeout(() => globo.remove(), 8000);
+        }
+    }
+
+    // CONFETI
+    function lanzarConfeti() {
+        var duration = 5000;
+        var end = Date.now() + duration;
+        (function frame() {
+            confetti({
+                particleCount: 8,
+                spread: 70,
+                origin: { x: Math.random(), y: Math.random() - 0.2 }
+            });
+            if (Date.now() < end) requestAnimationFrame(frame);
+        })();
+    }
+
+
+    // 🟦 CÁLCULO PRINCIPAL
+    function actualizarBarra() {
+        const fechaActual = new Date();
+
+        let proximoCumple = new Date(
+            fechaActual.getFullYear(),
+            fechaCumpleanos.getMonth(),
+            fechaCumpleanos.getDate()
+        );
+
+        if (proximoCumple < fechaActual) {
+            proximoCumple.setFullYear(proximoCumple.getFullYear() + 1);
+        }
+
+        const inicioAno = new Date(
+            proximoCumple.getFullYear() - 1,
+            fechaCumpleanos.getMonth(),
+            fechaCumpleanos.getDate()
+        );
+
+        const totalTiempo = proximoCumple - inicioAno;
+        const tiempoRestante = proximoCumple - fechaActual;
+
+        // 🎉 SI HOY ES EL CUMPLE
+        if (tiempoRestante <= 0) {
+            clearInterval(intervalId);
+            document.getElementById('contador').innerHTML = "🎂 ¡Feliz Cumpleaños! 🎉";
+            document.getElementById('progreso').style.width = "100%";
+            document.getElementById('progreso').textContent = "100%";
+
+            lanzarConfeti();
+            lanzarGlobos();
+            return;
+        }
+
+        // PROGRESO
+        const progreso = 100 - ((tiempoRestante / totalTiempo) * 100);
+        const progresoFinal = Math.min(100, Math.max(0, progreso));
+
+        document.getElementById('progreso').style.width = progresoFinal.toFixed(2) + '%';
+        document.getElementById('progreso').textContent = progresoFinal.toFixed(2) + '%';
+
+        // TIEMPO RESTANTE
+        const dias = Math.floor(tiempoRestante / (24 * 60 * 60 * 1000));
+        const horas = Math.floor((tiempoRestante % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+        const minutos = Math.floor((tiempoRestante % (60 * 60 * 1000)) / (60 * 1000));
+        const segundos = Math.floor((tiempoRestante % (60 * 1000)) / 1000);
+
+        // TAMAÑOS DINÁMICOS
+        let fontSize = 28;
+        if (dias <= 10) fontSize = 40;
+        if (dias <= 5) fontSize = 55;
+        if (dias <= 1) fontSize = 70;
+
+        const span = document.getElementById('tiempo-restante');
+        span.style.fontSize = `${fontSize}px`;
+        span.textContent = `${dias} días, ${horas} horas, ${minutos} minutos, ${segundos} segundos`;
+    }
+
+
+    // Revelación de fecha
+    function adivinar() {
+        const d = inputDia.value;
+        const m = inputMes.value;
+        const a = inputAnio.value;
+
+        if (!diaRevelado && d == fechaCumpleanos.getDate()) {
+            fechaCumple.textContent = `${d.padStart(2, '0')}/${fechaCumple.textContent.split('/')[1]}`;
+            diaRevelado = true;
+        }
+
+        if (!mesRevelado && m == (fechaCumpleanos.getMonth() + 1)) {
+            fechaCumple.textContent = `${fechaCumple.textContent.split('/')[0]}/${m.padStart(2, '0')}`;
+            mesRevelado = true;
+        }
+
+        if (!anioRevelado && a == fechaCumpleanos.getFullYear()) {
+            fechaCumple.textContent =
+                `${fechaCumple.textContent.split('/')[0]}/${fechaCumple.textContent.split('/')[1]}/${a}`;
+            anioRevelado = true;
+        }
+
+        inputDia.value = inputMes.value = inputAnio.value = "";
+    }
+
+
+    // MODO OSCURO
+    function toggleTheme() {
+        const body = document.body;
+        const b = document.getElementById("themeToggle");
+
+        if (body.style.backgroundColor === "white") {
+            body.style.backgroundColor = "#333";
+            body.style.color = "white";
+            b.textContent = "Claro";
+        } else {
+            body.style.backgroundColor = "white";
+            body.style.color = "#333";
+            b.textContent = "Oscuro";
+        }
+    }
+
+    // ACTIVACIÓN MANUAL (MODO PRUEBA) → TECLA P
+    document.addEventListener("keydown", (e) => {
+        if (e.key.toLowerCase() === "p") {
+            lanzarConfeti();
+            lanzarGlobos();
+        }
+    });
+
+    // ARRANQUE DE LA CUENTA ATRÁS
+    intervalId = setInterval(actualizarBarra, 1000);
+    actualizarBarra();
+</script>
+</body>
+</html>
