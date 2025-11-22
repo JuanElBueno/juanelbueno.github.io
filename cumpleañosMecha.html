@@ -105,7 +105,7 @@
 </head>
 <body>
 
-<h2>Cuenta regresiva para mi cumpleaños De Mecha</h2>
+<h2>Cuenta regresiva para mi cumpleaños</h2>
 
 <div id="barra">
     <div id="progreso">0%</div>
@@ -129,7 +129,7 @@
 
 <script>
 
-    // 🎂 CUMPLEAÑOS ORIGINAL (día, mes-1)
+    // 🎂 TU CUMPLEAÑOS REAL (día, mes-1)
     let fechaCumpleanos = new Date(2024, 10, 24);
 
     let diaRevelado = false;
@@ -139,7 +139,10 @@
 
     const emojisGlobos = ["🎈", "🎉", "🎊", "💛", "💙", "💚", "❤️"];
 
-    // ------------------- 🎈 GLOBOS -------------------
+
+    // -------------------------------------------------
+    // 🎈 GLOBOS
+    // -------------------------------------------------
     function lanzarGlobos() {
         for (let i = 0; i < 15; i++) {
             const globo = document.createElement("div");
@@ -152,7 +155,9 @@
         }
     }
 
-    // ------------------- 🎉 CONFETI -------------------
+    // -------------------------------------------------
+    // 🎉 CONFETI
+    // -------------------------------------------------
     function lanzarConfeti() {
         let duration = 5000;
         let end = Date.now() + duration;
@@ -167,39 +172,38 @@
         })();
     }
 
-    // ------------------- 🕒 CUENTA ATRÁS + LÓGICA DE CUMPLE -------------------
+
+    // -------------------------------------------------
+    // 🕒 CUENTA ATRÁS + LÓGICA DE CUMPLEAÑOS
+    // -------------------------------------------------
     function actualizarBarra() {
         const fechaActual = new Date();
-
         const dia = fechaCumpleanos.getDate();
         const mes = fechaCumpleanos.getMonth();
 
-        // ---- DETECTAR SI HOY ES EL CUMPLE ----
+        // ---- ¿Hoy es tu cumple? ----
         const esHoyCumple =
             fechaActual.getDate() === dia &&
             fechaActual.getMonth() === mes;
 
         if (esHoyCumple) {
 
-            // Mostrar mensaje
             document.getElementById("contador").innerHTML = "🎂 ¡Feliz Cumpleaños! 🎉";
             document.getElementById("progreso").style.width = "100%";
             document.getElementById("progreso").textContent = "100%";
 
-            // Activar fiesta solo una vez
             if (!window.cumpleCelebrado) {
                 lanzarConfeti();
                 lanzarGlobos();
                 window.cumpleCelebrado = true;
             }
 
-            return; // Mantener modo cumpleaños TODO EL DÍA
+            return; // Mantener todo el día así
         }
 
-        // Si ya pasó el día → reset fiesta
         window.cumpleCelebrado = false;
 
-        // ---- CALCULAR SIGUIENTE CUMPLE ----
+        // ---- Próximo cumpleaños ----
         let proximoCumple = new Date(
             fechaActual.getFullYear(),
             mes,
@@ -211,13 +215,7 @@
         }
 
         const tiempoRestante = proximoCumple - fechaActual;
-
-        const inicioAno = new Date(
-            proximoCumple.getFullYear() - 1,
-            mes,
-            dia
-        );
-
+        const inicioAno = new Date(proximoCumple.getFullYear() - 1, mes, dia);
         const totalTiempo = proximoCumple - inicioAno;
 
         // Progreso
@@ -226,7 +224,7 @@
         prog.style.width = progreso.toFixed(2) + "%";
         prog.textContent = progreso.toFixed(2) + "%";
 
-        // Tiempo restante formato bonito
+        // Tiempo restante
         const dias = Math.floor(tiempoRestante / (24*60*60*1000));
         const horas = Math.floor((tiempoRestante % (24*60*60*1000)) / (60*60*1000));
         const minutos = Math.floor((tiempoRestante % (60*60*1000)) / (60*1000));
@@ -241,14 +239,23 @@
         span.style.fontSize = fontSize + "px";
         span.textContent = `${dias} días, ${horas} horas, ${minutos} minutos, ${segundos} segundos`;
 
-        // ---- ACTUALIZAR AÑO AUTOMÁTICO ----
+        // -------------------------------------------------
+        // 🟢 MOSTRAR LA FECHA SOLO SI SE HA ADIVINADO
+        // -------------------------------------------------
         const fechaTexto = document.getElementById("fecha-cumple");
-        let diaTxt = dia.toString().padStart(2, "0");
-        let mesTxt = (mes + 1).toString().padStart(2, "0");
-        fechaTexto.textContent = `${diaTxt}/${mesTxt}/${proximoCumple.getFullYear()}`;
+        let partes = fechaTexto.textContent.split("/");
+
+        if (diaRevelado) partes[0] = dia.toString().padStart(2, "0");
+        if (mesRevelado) partes[1] = (mes + 1).toString().padStart(2, "0");
+        if (anioRevelado) partes[2] = proximoCumple.getFullYear().toString();
+
+        fechaTexto.textContent = partes.join("/");
     }
 
-    // ------------------- ❓ ADIVINAR -------------------
+
+    // -------------------------------------------------
+    // ❓ ADIVINAR CUMPLE
+    // -------------------------------------------------
     function adivinar() {
         const inputDiaEl = document.getElementById('inputDia');
         const inputMesEl = document.getElementById('inputMes');
@@ -283,7 +290,10 @@
         inputAnioEl.value = "";
     }
 
-    // ------------------- 🌙 MODO OSCURO -------------------
+
+    // -------------------------------------------------
+    // 🌙 MODO OSCURO
+    // -------------------------------------------------
     function toggleTheme() {
         const body = document.body;
         const btn = document.getElementById("themeToggle");
@@ -299,7 +309,9 @@
         }
     }
 
-    // ------------------- 🅿 MODO PRUEBA TECLA P -------------------
+    // -------------------------------------------------
+    // 🅿 MODO PRUEBA TECLA P
+    // -------------------------------------------------
     document.addEventListener("keydown", (e) => {
         if (e.key.toLowerCase() === "p") {
             lanzarConfeti();
@@ -307,7 +319,9 @@
         }
     });
 
+    // -------------------------------------------------
     // INICIO
+    // -------------------------------------------------
     intervalId = setInterval(actualizarBarra, 1000);
     actualizarBarra();
 
