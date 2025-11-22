@@ -1,84 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="utf-8"/>
-  <title>Me cago en todo</title>
+  <meta charset="utf-8">
+  <title>Menú Principal</title>
   <link rel="shortcut icon" href="icono_pagina.ico">
+
   <style>
-    /* General styling */
+    /* ===== ESTILO GENERAL ===== */
     body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f0f0f0;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        height: 100vh;
-        flex-direction: column;
-        color: #333;
+      font-family: Arial, sans-serif;
+      background-color: #f2f4f7;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
     }
 
-    /* Header styling */
     h1.Pag {
-        font-size: 2.5em;
-        color: #2c3e50;
-        margin-bottom: 20px;
-        text-align: center;
+      font-size: 2.6em;
+      margin-top: 50px;
+      margin-bottom: 25px;
+      color: #2c3e50;
+      text-align: center;
     }
 
-    /* Navbar styling */
+    /* ===== CONTENEDOR DEL MENÚ ===== */
+    .menu-wrapper {
+      width: 100%;
+      max-width: 900px;
+      background: #34495e;
+      padding: 25px 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+
+    /* ===== NAVBAR ===== */
     ul.navbar {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        background-color: #34495e;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 1111px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 15px;
     }
 
     ul.navbar li {
-        float: left;
-        width: 100%; /* For mobile first design */
+      flex: 1 1 250px;            /* tarjetas responsivas */
+      max-width: 280px;
     }
 
     ul.navbar li a {
-        display: block;
-        color: white;
-        text-align: center;
-        padding: 14px 20px;
-        text-decoration: none;
-        font-size: 1.1em;
-        transition: background-color 0.3s;
+      display: block;
+      background-color: #3d566e;
+      padding: 15px 10px;
+      border-radius: 10px;
+      text-align: center;
+      color: white;
+      text-decoration: none;
+      font-size: 1.1em;
+      transition: all 0.3s ease;
     }
 
-    /* Hover effect ndada */
     ul.navbar li a:hover {
-        background-color: #1abc9c;
+      background-color: #1abc9c;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.25);
     }
 
-    /* For larger screens, make the navbar horizontal */
-    @media (min-width: 600px) {
-        ul.navbar li {
-            width: auto;
-        }
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 600px) {
+      h1.Pag {
+        font-size: 2.1em;
+        margin-top: 30px;
+      }
+      .menu-wrapper {
+        padding: 20px 10px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <h1 class="Pag">Pagina principal</h1>
-  <ul class="navbar">
-    <li><a href="probando.html">Video de minecraft</a></li>
-    <li><a href="El tiempo de descarga.html">El tiempo de descarga</a></li>
-    <li><a href="Tres en raya/index.html">Tres en raya</a></li>
-    <li><a href="cumpleaños.html">Cuanto me queda para mi cumpleaños</a></li>
-    <!-- <li><a href="probando/">Cuanto me queda para mi cumpleaños</a></li>
-    <li><a href="version movil/">Cuanto me queda para mi cumpleaños versión móvil</a></li> -->
-    <li><a href="Time.html">Hora 12h</a></li>
-    <li><a href="Time24.html">Hora 24h</a></li>
-  </ul>
+  <h1 class="Pag">Menú Principal</h1>
+
+  <div class="menu-wrapper">
+    <ul class="navbar">
+      <li><a href="probando.html">Video de Minecraft</a></li>
+      <li><a href="El tiempo de descarga.html">El tiempo de descarga</a></li>
+      <li><a href="Tres en raya/index.html">Tres en raya</a></li>
+      <li><a href="cumpleaños.html">Cuenta atrás para mi cumpleaños</a></li>
+      <li><a href="Time.html">Hora 12h</a></li>
+      <li><a href="Time24.html">Hora 24h</a></li>
+    </ul>
+  </div>
+
 </body>
 </html>
