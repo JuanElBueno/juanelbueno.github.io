@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            position: relative;
+        }
+
+        #barra {
+            width: 100%;
+            background-color: #333;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 20px;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        #progreso {
+            width: 0;
+            height: 30px;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            animation: cambioColor 2s linear infinite;
+        }
+
+        @keyframes cambioColor {
+            0% { background-color: #4caf50; }
+            50% { background-color: #2196f3; }
+            100% { background-color: #4caf50; }
+        }
+
+        #contador {
+            font-size: 28px;
+            margin-top: 10px;
+        }
+        
+        #revelacion {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        
+        #formulario {
+            margin-top: 20px;
+        }
+
+        .inputField {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #themeToggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<button id="themeToggle" onclick="toggleTheme()">Oscuro</button>
+
+<h2>Cuenta regresiva para mi cumpleaños</h2>
+
+<div id="barra">
+    <div id="progreso">0%</div>
+</div>
+
+<div id="contador">Faltan: <span id="tiempo-restante"></span></div>
+
+<div id="revelacion">Fecha de cumpleaños actual: <span id="dia">??</span>/<span id="mes">??</span>/<span id="anio">????</span></div>
+
+<div id="formulario">
+    <input type="text" id="inputDia" class="inputField" placeholder="Día (1-31)">
+    <input type="text" id="inputMes" class="inputField" placeholder="Mes (1-12)">
+    <input type="text" id="inputAnio" class="inputField" placeholder="Año (YYYY)">
+    <button onclick="adivinar()">Adivinar</button>
+</div>
+
+<script>
+    // Configura la fecha de cumpleaños (Año, Mes-1, Día)
+    let fechaCumpleanos = new Date(2024, 5, 25); // Mes-1 porque los meses comienzan desde 0
+    let diaRevelado = false;
+    let mesRevelado = false;
+    let anioRevelado = false;
+
+    function actualizarBarra() {
+        const fechaActual = new Date();
+        let tiempoRestante = fechaCumpleanos - fechaActual;
+
+        // Si la fecha ha pasado, establece la nueva fecha de cumpleaños al próximo año
+        if (tiempoRestante <= 0) {
+            fechaCumpleanos.setFullYear(fechaCumpleanos.getFullYear() + 1);
+            tiempoRestante = fechaCumpleanos - fechaActual;
+        }
+
+        // Calcula el progreso
+        const progreso = Math.max(0, 100 - (tiempoRestante / (365 * 24 * 60 * 60 * 1000)) * 100);
+
+        // Actualiza el ancho de la barra de progreso y el texto
+        document.getElementById('progreso').style.width = progreso + '%';
+        document.getElementById('progreso').textContent = progreso.toFixed(2) + '%';
+
+        // Calcula el tiempo restante en días, horas, minutos y segundos
+        const dias = Math.floor(tiempoRestante / (24 * 60 * 60 * 1000));
+        const horas = Math.floor((tiempoRestante % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+        const minutos = Math.floor((tiempoRestante % (60 * 60 * 1000)) / (60 * 1000));
+        const segundos = Math.floor((tiempoRestante % (60 * 1000)) / 1000);
+
+        // Actualiza el contador
+        const tiempoRestanteSpan = document.getElementById('tiempo-restante');
+        if (dias <= 20) {
+            tiempoRestanteSpan.style.fontSize = '40px';
+        } else {
+            tiempoRestanteSpan.style.fontSize = 'inherit';
+        }
+        tiempoRestanteSpan.textContent = `${dias} días, ${horas} horas, ${minutos} minutos, ${segundos} segundos`;
+    }
+
+    function adivinar() {
+        const inputDia = document.getElementById('inputDia').value;
+        const inputMes = document.getElementById('inputMes').value;
+        const inputAnio = document.getElementById('inputAnio').value;
+        
+        if (!diaRevelado && inputDia == fechaCumpleanos.getDate()) {
+            document.getElementById('dia').textContent = inputDia.padStart(2, '0');
+            diaRevelado = true;
+        }
+        
+        if (!mesRevelado && inputMes == (fechaCumpleanos.getMonth() + 1)) {
+            document.getElementById('mes').textContent = inputMes.padStart(2, '0');
+            mesRevelado = true;
+        }
+        
+        if (!anioRevelado && inputAnio == fechaCumpleanos.getFullYear()) {
+            document.getElementById('anio').textContent = inputAnio;
+            anioRevelado = true;
+        }
+        
+        // Limpiar los campos de entrada después de adivinar
+        document.getElementById('inputDia').value = '';
+        document.getElementById('inputMes').value = '';
+        document.getElementById('inputAnio').value = '';
+    }
+
+    function toggleTheme() {
+        const body = document.body;
+        const themeToggleBtn = document.getElementById('themeToggle');
+        if (body.style.backgroundColor === 'white') {
+            body.style.backgroundColor = '#333';
+            body.style.color = 'white';
+            themeToggleBtn.textContent = 'Claro';
+            themeToggleBtn.style.backgroundColor = 'white';
+            themeToggleBtn.style.color = '#333';
+        } else {
+            body.style.backgroundColor = 'white';
+            body.style.color = '#333';
+            themeToggleBtn.textContent = 'Oscuro';
+            themeToggleBtn.style.backgroundColor = '#333';
+            themeToggleBtn.style.color = 'white';
+        }
+    }
+
+    // Actualiza la barra y el contador cada segundo
+    setInterval(actualizarBarra, 1000);
+
+    // Llama a la función una vez para configurar la barra y el contador al cargar la página
+    actualizarBarra();
+</script>
+
+</body>
+</html>

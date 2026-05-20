@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* ESTILOS "COMING SOON / ACCESO" PARA OBS */
+        body {
+            font-family: 'Courier New', Courier, monospace; 
+            margin: 0;
+            padding: 20px;
+            background-color: transparent; 
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; 
+        }
+
+        .contenedor-principal {
+            text-align: center;
+            background: rgba(10, 10, 15, 0.85); /* Fondo un poco más oscuro para dar contraste */
+            padding: 30px 40px;
+            border-radius: 12px;
+            border: 2px solid #00ffcc;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3), inset 0 0 15px rgba(0, 255, 204, 0.1);
+            width: 450px; /* Un poco más ancho para que quepa bien el texto grande */
+        }
+
+        .titulo-sistema {
+            font-size: 22px;
+            color: #00ffcc;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 8px #00ffcc, 2px 2px 4px black;
+            font-weight: bold;
+        }
+
+        /* Contenedor de las cajas */
+        .cajas-tiempo {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        /* Estilo de cada cuadrado individual */
+        .caja {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ff0055;
+            border-radius: 8px;
+            padding: 15px 5px;
+            flex: 1; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4), 2px 2px 5px black;
+            position: relative;
+        }
+
+        .caja::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: #ff0055;
+            opacity: 0.5;
+        }
+
+        .numero {
+            font-size: 40px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px black, 0 0 15px #ff0055;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .etiqueta {
+            font-size: 14px;
+            font-weight: bold;
+            color: #d0d0d0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        /* --- ESTILOS MEJORADOS PARA EL PORCENTAJE --- */
+        .contenedor-progreso {
+            width: 100%;
+            text-align: left;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 10px;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .texto-progreso {
+            color: #ffffff; /* Texto blanco para destacar máximo */
+            font-size: 20px; /* Mucho más grande */
+            font-weight: bold; /* En negrita */
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            /* Sombra negra durísima para que resalte en OBS + brillo cyan */
+            text-shadow: 
+                -1px -1px 0 #000,  
+                 1px -1px 0 #000,
+                -1px  1px 0 #000,
+                 1px  1px 0 #000,
+                 3px  3px 5px rgba(0,0,0,0.9),
+                 0 0 10px #00ffcc;
+        }
+
+        .barra-fondo {
+            width: 100%;
+            height: 18px; /* Barra un poco más gruesa */
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ffcc;
+            border-radius: 9px;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 2px 2px 5px black;
+        }
+
+        .barra-llenado {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00ffcc, #ff0055);
+            box-shadow: 0 0 15px #ff0055;
+            transition: width 1s linear;
+        }
+
+        .mensaje-final {
+            color: #00ffcc;
+            font-size: 35px;
+            text-shadow: 0 0 20px #00ffcc, 2px 2px 5px black;
+            animation: parpadeo 1s infinite alternate;
+        }
+
+        @keyframes parpadeo {
+            from { opacity: 1; text-shadow: 0 0 20px #00ffcc, 0 0 30px #00ffcc, 2px 2px 5px black; }
+            to { opacity: 0.5; text-shadow: 0 0 10px #00ffcc, 2px 2px 5px black; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="contenedor-principal">
+    <div class="titulo-sistema" id="titulo">Acceso al Cumpleaños en:</div>
+    
+    <div id="contador" class="cajas-tiempo">
+        <div class="caja">
+            <span class="numero" id="dias">00</span>
+            <span class="etiqueta">Días</span>
+        </div>
+        <div class="caja">
+            <span class="numero" id="horas">00</span>
+            <span class="etiqueta">Hrs</span>
+        </div>
+        <div class="caja">
+            <span class="numero" id="minutos">00</span>
+            <span class="etiqueta">Min</span>
+        </div>
+        <div class="caja">
+            <span class="numero" id="segundos">00</span>
+            <span class="etiqueta">Seg</span>
+        </div>
+    </div>
+
+    <div class="contenedor-progreso" id="zona-progreso">
+        <div class="texto-progreso">
+            <span>CARGANDO...</span>
+            <span id="texto-porcentaje">0.00000%</span>
+        </div>
+        <div class="barra-fondo">
+            <div id="barra-llenado" class="barra-llenado"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Configura la fecha de tu cumpleaños (Año, Mes-1, Día)
+    // Recuerda: Enero es 0, Febrero es 1... Junio es 5.
+    let fechaCumpleanos = new Date(2024, 5, 25); 
+    
+    let intervalId = null;
+
+    function actualizarContador() {
+        const fechaActual = new Date();
+        let tiempoRestante = fechaCumpleanos - fechaActual;
+
+        if (tiempoRestante <= 0) {
+            const esHoy = fechaActual.getDate() === fechaCumpleanos.getDate() &&
+                          fechaActual.getMonth() === fechaCumpleanos.getMonth();
+
+            if (esHoy) {
+                clearInterval(intervalId);
+                document.getElementById('contador').innerHTML = "<div class='mensaje-final'>¡ACCESO CONCEDIDO!<br>🎉 FELIZ CUMPLEAÑOS 🎉</div>";
+                document.getElementById('titulo').style.display = 'none';
+                
+                document.getElementById('barra-llenado').style.width = '100%';
+                document.getElementById('texto-porcentaje').textContent = '100.00000%';
+                document.getElementById('zona-progreso').querySelector('span').textContent = 'SISTEMA DESBLOQUEADO';
+                return;
+            } else {
+                fechaCumpleanos.setFullYear(fechaActual.getFullYear());
+                if (fechaCumpleanos < fechaActual) {
+                    fechaCumpleanos.setFullYear(fechaActual.getFullYear() + 1);
+                }
+                tiempoRestante = fechaCumpleanos - fechaActual;
+            }
+        }
+
+        const dias = Math.floor(tiempoRestante / (24 * 60 * 60 * 1000));
+        const horas = Math.floor((tiempoRestante % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+        const minutos = Math.floor((tiempoRestante % (60 * 60 * 1000)) / (60 * 1000));
+        const segundos = Math.floor((tiempoRestante % (60 * 1000)) / 1000);
+
+        document.getElementById('dias').textContent = dias.toString().padStart(2, '0');
+        document.getElementById('horas').textContent = horas.toString().padStart(2, '0');
+        document.getElementById('minutos').textContent = minutos.toString().padStart(2, '0');
+        document.getElementById('segundos').textContent = segundos.toString().padStart(2, '0');
+
+        const unAnoMs = 365 * 24 * 60 * 60 * 1000;
+        const progreso = Math.max(0, 100 - (tiempoRestante / unAnoMs) * 100);
+
+        document.getElementById('barra-llenado').style.width = progreso + '%';
+        document.getElementById('texto-porcentaje').textContent = progreso.toFixed(5) + '%';
+    }
+
+    intervalId = setInterval(actualizarContador, 1000);
+    actualizarContador();
+</script>
+
+</body>
+</html>

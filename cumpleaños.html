@@ -1,354 +1,260 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Librería de confeti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            margin: 20px;
-            background-color: #f0f0f0;
-            color: #333;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Globos animados */
-        .globo {
-            position: fixed;
-            bottom: -150px;
-            font-size: 60px;
-            animation: subirGlobos 6s linear forwards;
-            pointer-events: none;
-        }
-
-        @keyframes subirGlobos {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-120vh); opacity: 0; }
-        }
-
-        #barra {
-            width: 100%;
-            background-color: #333;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-top: 20px;
-            overflow: hidden;
-            display: inline-block;
-        }
-
-        #progreso {
-            width: 0;
-            height: 30px;
-            border-radius: 5px;
-            text-align: center;
-            line-height: 30px;
-            color: white;
-            animation: cambioColor 2s linear infinite;
-        }
-
-        @keyframes cambioColor {
-            0% { background-color: #4caf50; }
-            50% { background-color: #2196f3; }
-            100% { background-color: #4caf50; }
-        }
-
-        #contador { font-size: 28px; margin-top: 10px; }
-        #revelacion { font-size: 20px; margin-top: 20px; }
-        #formulario { margin-top: 20px; }
-
-        .inputField {
-            padding: 10px;
-            margin: 5px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        #botonAdivinar {
-            padding: 10px 20px;
-            margin: 5px;
-            border-radius: 5px;
-            border: none;
-            background-color: #4caf50;
-            color: white;
-            cursor: pointer;
-            transition: 0.3s ease;
-        }
-
-        #botonAdivinar:hover { transform: scale(1.05); background-color: #45a049; }
-        #botonAdivinar:active { transform: scale(0.95); }
-
-        #themeToggle {
-            position: fixed;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #333;
-            color: white;
-            cursor: pointer;
-        }
-
-        .fecha-cumple {
-            font-weight: bold;
-            color: #4caf50;
-            font-size: 24px;
-        }
-
-button {
-  background: #4caf50;
-  color: black;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 18px;
-  margin: 5px;
-  transition: 0.3s;
-}
-button:hover {
-  background: #4caf50;
-  transform: scale(1.05);
-}
-    </style>
-</head>
-<body>
-
-<h2>Cuenta regresiva para mi cumpleaños</h2>
-
-<div id="barra">
-    <div id="progreso">0%</div>
-</div>
-
-<div id="contador">Faltan: <span id="tiempo-restante"></span></div>
-
-<div id="revelacion">
-    Fecha de cumpleaños actual:
-    <span id="fecha-cumple" class="fecha-cumple">??/??/????</span>
-</div>
-
-<div id="formulario">
-    <input type="text" id="inputDia" class="inputField" placeholder="Día (1-31)">
-    <input type="text" id="inputMes" class="inputField" placeholder="Mes (1-12)">
-    <input type="text" id="inputAnio" class="inputField" placeholder="Año (YYYY)">
-    <button id="botonAdivinar" onclick="adivinar()">Adivinar</button>
-</div>
-
-<button id="botonAdivinar" onclick="volverInicio()">⬅️ Volver al inicio</button>
-<button id="themeToggle" onclick="toggleTheme()">Oscuro</button>
-
-<script>
-
-    // 🎂 TU CUMPLEAÑOS REAL (día, mes-1)
-    let fechaCumpleanos = new Date(2024, 5, 25);
-
-    let diaRevelado = false;
-    let mesRevelado = false;
-    let anioRevelado = false;
-    let intervalId = null;
-
-    const emojisGlobos = ["🎈", "🎉", "🎊", "💛", "💙", "💚", "❤️"];
-
-
-    // -------------------------------------------------
-    // 🎈 GLOBOS
-    // -------------------------------------------------
-    function lanzarGlobos() {
-        for (let i = 0; i < 15; i++) {
-            const globo = document.createElement("div");
-            globo.classList.add("globo");
-            globo.style.left = Math.random() * 100 + "vw";
-            globo.style.animationDuration = (5 + Math.random() * 3) + "s";
-            globo.textContent = emojisGlobos[Math.floor(Math.random() * emojisGlobos.length)];
-            document.body.appendChild(globo);
-            setTimeout(() => globo.remove(), 8000);
-        }
-    }
-
-    // -------------------------------------------------
-    // 🎉 CONFETI
-    // -------------------------------------------------
-    function lanzarConfeti() {
-        let duration = 5000;
-        let end = Date.now() + duration;
-
-        (function frame() {
-            confetti({
-                particleCount: 8,
-                spread: 70,
-                origin: { x: Math.random(), y: Math.random() - 0.2 }
-            });
-            if (Date.now() < end) requestAnimationFrame(frame);
-        })();
-    }
-
-
-    // -------------------------------------------------
-    // 🕒 CUENTA ATRÁS + LÓGICA DE CUMPLEAÑOS
-    // -------------------------------------------------
-    function actualizarBarra() {
-        const fechaActual = new Date();
-        const dia = fechaCumpleanos.getDate();
-        const mes = fechaCumpleanos.getMonth();
-
-        // ---- ¿Hoy es tu cumple? ----
-        const esHoyCumple =
-            fechaActual.getDate() === dia &&
-            fechaActual.getMonth() === mes;
-
-        if (esHoyCumple) {
-
-            document.getElementById("contador").innerHTML = "🎂 ¡Feliz Cumpleaños! 🎉";
-            document.getElementById("progreso").style.width = "100%";
-            document.getElementById("progreso").textContent = "100%";
-
-            if (!window.cumpleCelebrado) {
-                lanzarConfeti();
-                lanzarGlobos();
-                window.cumpleCelebrado = true;
-            }
-
-            return; // Mantener todo el día así
-        }
-
-        window.cumpleCelebrado = false;
-
-        // ---- Próximo cumpleaños ----
-        let proximoCumple = new Date(
-            fechaActual.getFullYear(),
-            mes,
-            dia
-        );
-
-        if (proximoCumple <= fechaActual) {
-            proximoCumple.setFullYear(proximoCumple.getFullYear() + 1);
-        }
-
-        const tiempoRestante = proximoCumple - fechaActual;
-        const inicioAno = new Date(proximoCumple.getFullYear() - 1, mes, dia);
-        const totalTiempo = proximoCumple - inicioAno;
-
-        // Progreso
-        const progreso = 100 - ((tiempoRestante / totalTiempo) * 100);
-        const prog = document.getElementById("progreso");
-        prog.style.width = progreso.toFixed(2) + "%";
-        prog.textContent = progreso.toFixed(2) + "%";
-
-        // Tiempo restante
-        const dias = Math.floor(tiempoRestante / (24*60*60*1000));
-        const horas = Math.floor((tiempoRestante % (24*60*60*1000)) / (60*60*1000));
-        const minutos = Math.floor((tiempoRestante % (60*60*1000)) / (60*1000));
-        const segundos = Math.floor((tiempoRestante % (60*1000)) / 1000);
-
-        let fontSize = 28;
-        if (dias <= 10) fontSize = 40;
-        if (dias <= 5) fontSize = 55;
-        if (dias <= 1) fontSize = 70;
-
-        const span = document.getElementById("tiempo-restante");
-        span.style.fontSize = fontSize + "px";
-        span.textContent = `${dias} días, ${horas} horas, ${minutos} minutos, ${segundos} segundos`;
-
-        // -------------------------------------------------
-        // 🟢 MOSTRAR LA FECHA SOLO SI SE HA ADIVINADO
-        // -------------------------------------------------
-        const fechaTexto = document.getElementById("fecha-cumple");
-        let partes = fechaTexto.textContent.split("/");
-
-        if (diaRevelado) partes[0] = dia.toString().padStart(2, "0");
-        if (mesRevelado) partes[1] = (mes + 1).toString().padStart(2, "0");
-        if (anioRevelado) partes[2] = proximoCumple.getFullYear().toString();
-
-        fechaTexto.textContent = partes.join("/");
-    }
-
-
-    // -------------------------------------------------
-    // ❓ ADIVINAR CUMPLE
-    // -------------------------------------------------
-    function adivinar() {
-        const inputDiaEl = document.getElementById('inputDia');
-        const inputMesEl = document.getElementById('inputMes');
-        const inputAnioEl = document.getElementById('inputAnio');
-        const fechaTexto = document.getElementById('fecha-cumple');
-
-        const d = inputDiaEl.value;
-        const m = inputMesEl.value;
-        const a = inputAnioEl.value;
-
-        let partes = fechaTexto.textContent.split('/');
-
-        if (!diaRevelado && d == fechaCumpleanos.getDate()) {
-            partes[0] = d.padStart(2,"0");
-            diaRevelado = true;
-        }
-
-        if (!mesRevelado && m == (fechaCumpleanos.getMonth() + 1)) {
-            partes[1] = m.padStart(2,"0");
-            mesRevelado = true;
-        }
-
-        if (!anioRevelado && a == fechaCumpleanos.getFullYear()) {
-            partes[2] = a;
-            anioRevelado = true;
-        }
-
-        fechaTexto.textContent = partes.join("/");
-
-        inputDiaEl.value = "";
-        inputMesEl.value = "";
-        inputAnioEl.value = "";
-    }
-
-
-    // -------------------------------------------------
-    // 🌙 MODO OSCURO
-    // -------------------------------------------------
-    function toggleTheme() {
-        const body = document.body;
-        const btn = document.getElementById("themeToggle");
-
-        if (body.style.backgroundColor === "white") {
-            body.style.backgroundColor = "#333";
-            body.style.color = "white";
-            btn.textContent = "Claro";
-        } else {
-            body.style.backgroundColor = "white";
-            body.style.color = "#333";
-            btn.textContent = "Oscuro";
-        }
-    }
-
-    // -------------------------------------------------
-    // 🅿 MODO PRUEBA TECLA P
-    // -------------------------------------------------
-    document.addEventListener("keydown", (e) => {
-        if (e.key.toLowerCase() === "p") {
-            lanzarConfeti();
-            lanzarGlobos();
-        }
-    });
-
-    // -------------------------------------------------
-    // INICIO
-    // -------------------------------------------------
-    intervalId = setInterval(actualizarBarra, 1000);
-    actualizarBarra();
-
-
-function volverInicio() {
-  window.location.href = "/";
-}
-
-</script>
-
-</body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            position: relative;
+            transition: background-color 0.3s, color 0.3s; /* Añadida transición suave */
+        }
+
+        #barra {
+            width: 100%;
+            background-color: #333;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 20px;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        #progreso {
+            width: 0;
+            height: 30px;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            animation: cambioColor 2s linear infinite;
+        }
+
+        @keyframes cambioColor {
+            0% { background-color: #4caf50; }
+            50% { background-color: #2196f3; }
+            100% { background-color: #4caf50; }
+        }
+
+        #contador {
+            font-size: 28px;
+            margin-top: 10px;
+        }
+
+        #revelacion {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        #formulario {
+            margin-top: 20px;
+        }
+
+        .inputField {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #botonAdivinar {
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            border: none;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        #botonAdivinar:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        #botonAdivinar:active {
+            transform: scale(0.95);
+        }
+
+        #themeToggle {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .fecha-cumple {
+            font-weight: bold;
+            color: #4caf50;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Cuenta regresiva para mi cumpleaños </h2>
+
+<div id="barra">
+    <div id="progreso">0%</div>
+</div>
+
+<div id="contador">Faltan: <span id="tiempo-restante"></span></div>
+
+<div id="revelacion">Fecha de cumpleaños actual: <span id="fecha-cumple" class="fecha-cumple">??/??/????</span></div>
+
+<div id="formulario">
+    <input type="text" id="inputDia" class="inputField" placeholder="Día (1-31)">
+    <input type="text" id="inputMes" class="inputField" placeholder="Mes (1-12)">
+    <input type="text" id="inputAnio" class="inputField" placeholder="Año (YYYY)">
+    <button id="botonAdivinar" onclick="adivinar()">Adivinar</button>
+</div>
+
+<button id="themeToggle" onclick="toggleTheme()">Oscuro</button>
+
+<script>
+    // Configura la fecha de cumpleaños base
+    let fechaCumpleanos = new Date(2024, 5, 25); // 25 de Junio (Mes 5 porque empieza en 0)
+    
+    // Variables para controlar lo que se muestra
+    let diaRevelado = false;
+    let mesRevelado = false;
+    let anioRevelado = false;
+    let displayDia = '??';
+    let displayMes = '??';
+    let displayAnio = '????';
+    
+    let intervalId = null;
+
+    function actualizarBarra() {
+        const fechaActual = new Date();
+        let tiempoRestante = fechaCumpleanos - fechaActual;
+
+        // Si la fecha ha pasado o es hoy
+        if (tiempoRestante <= 0) {
+            const esHoy = fechaActual.getDate() === fechaCumpleanos.getDate() &&
+                          fechaActual.getMonth() === fechaCumpleanos.getMonth();
+
+            if (esHoy) {
+                // Detiene la cuenta regresiva si es el día del cumpleaños
+                clearInterval(intervalId);
+                document.getElementById('contador').innerHTML = "¡Feliz Cumpleaños!";
+                document.getElementById('progreso').style.width = '100%';
+                document.getElementById('progreso').textContent = '100%';
+                return;
+            } else {
+                // Ajusta automáticamente al próximo cumpleaños
+                fechaCumpleanos.setFullYear(fechaActual.getFullYear());
+                if (fechaCumpleanos < fechaActual) {
+                    fechaCumpleanos.setFullYear(fechaActual.getFullYear() + 1);
+                }
+                tiempoRestante = fechaCumpleanos - fechaActual;
+            }
+        }
+
+        // Calcula el progreso (asumiendo un año de 365 días)
+        const progreso = Math.max(0, 100 - (tiempoRestante / (365 * 24 * 60 * 60 * 1000)) * 100);
+
+        // Actualiza el ancho de la barra de progreso y el texto
+        document.getElementById('progreso').style.width = progreso + '%';
+        document.getElementById('progreso').textContent = progreso.toFixed(2) + '%';
+
+        // Calcula el tiempo restante en días, horas, minutos y segundos
+        const dias = Math.floor(tiempoRestante / (24 * 60 * 60 * 1000));
+        const horas = Math.floor((tiempoRestante % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+        const minutos = Math.floor((tiempoRestante % (60 * 60 * 1000)) / (60 * 1000));
+        const segundos = Math.floor((tiempoRestante % (60 * 1000)) / 1000);
+
+        // Calcula el tamaño de la fuente basado en los días restantes
+        const maxFontSize = 70;
+        const minFontSize = 28;
+        const fontSize = dias <= 20 
+            ? minFontSize + ((maxFontSize - minFontSize) * (20 - dias) / 20)
+            : minFontSize;
+
+        // Actualiza el contador
+        const tiempoRestanteSpan = document.getElementById('tiempo-restante');
+        tiempoRestanteSpan.style.fontSize = `${fontSize}px`;
+        tiempoRestanteSpan.textContent = `${dias} días, ${horas} horas, ${minutos} minutos, ${segundos} segundos`;
+    }
+
+    function adivinar() {
+        const inputDia = document.getElementById('inputDia').value;
+        const inputMes = document.getElementById('inputMes').value;
+        const inputAnio = document.getElementById('inputAnio').value;
+
+        // Validamos y revelamos sin perder el resto de la cadena
+        if (!diaRevelado && inputDia == fechaCumpleanos.getDate()) {
+            displayDia = inputDia.padStart(2, '0');
+            diaRevelado = true;
+        }
+
+        if (!mesRevelado && inputMes == (fechaCumpleanos.getMonth() + 1)) {
+            displayMes = inputMes.padStart(2, '0');
+            mesRevelado = true;
+        }
+
+        if (!anioRevelado && inputAnio == fechaCumpleanos.getFullYear()) {
+            displayAnio = inputAnio;
+            anioRevelado = true;
+        }
+
+        // Reconstruimos el texto completo
+        document.getElementById('fecha-cumple').textContent = `${displayDia}/${displayMes}/${displayAnio}`;
+
+        // Limpiar los campos de entrada después de adivinar
+        document.getElementById('inputDia').value = '';
+        document.getElementById('inputMes').value = '';
+        document.getElementById('inputAnio').value = '';
+    }
+
+    function toggleTheme() {
+        const body = document.body;
+        const themeToggleBtn = document.getElementById('themeToggle');
+        
+        // Comprobamos si actualmente tiene el color oscuro o no
+        if (body.style.backgroundColor === 'rgb(51, 51, 51)' || body.style.backgroundColor === '#333') {
+            body.style.backgroundColor = '#f0f0f0';
+            body.style.color = '#333';
+            themeToggleBtn.textContent = 'Oscuro';
+            themeToggleBtn.style.backgroundColor = '#333';
+            themeToggleBtn.style.color = 'white';
+        } else {
+            body.style.backgroundColor = '#333';
+            body.style.color = 'white';
+            themeToggleBtn.textContent = 'Claro';
+            themeToggleBtn.style.backgroundColor = '#f0f0f0';
+            themeToggleBtn.style.color = '#333';
+        }
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            adivinar();
+        }
+    }
+
+    document.getElementById('inputDia').addEventListener('keypress', handleKeyPress);
+    document.getElementById('inputMes').addEventListener('keypress', handleKeyPress);
+    document.getElementById('inputAnio').addEventListener('keypress', handleKeyPress);
+
+    // Actualiza la barra y el contador cada segundo
+    intervalId = setInterval(actualizarBarra, 1000);
+
+    // Llama a la función una vez para configurar la barra y el contador al cargar la página
+    actualizarBarra();
+</script>
+
+</body>
 </html>

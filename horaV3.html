@@ -1,89 +1,119 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reloj en Twitch</title>
-
-  <!-- Carga de fuente clockicons desde WebFontFree -->
-  <script src="https://c.webfontfree.com/c.js?f=clockicons" type="text/javascript"></script>
-
-  <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #0e0e10; /* Fondo típico oscuro de Twitch */
-      color: #ffffff; /* Texto blanco */
-    }
-
-    .etiqueta {
-      animation: colorChange 3s infinite alternate;
-      font-size: 70px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      text-align: center;
-      color: #ffffff;
-      text-shadow: 0 0 10px #0e0e10, 0 0 20px #0e0e10, 0 0 30px #0e0e10;
-      -webkit-text-stroke: 2px rgba(0, 0, 0, 0.7);
-    }
-
-    .reloj {
-      font-size: 120px;
-      font-family: 'clockicons', sans-serif;
-      text-shadow: 0 0 20px #1e90ff, 0 0 30px #1e90ff, 0 0 40px #1e90ff;
-      -webkit-text-stroke: 3px rgba(0, 0, 0, 0.8);
-      margin-bottom: 30px;
-    }
-
-    @keyframes colorChange {
-      0% { color: #ff0000; }
-      16.666% { color: #ff8000; }
-      33.333% { color: #ffff00; }
-      50% { color: #00ff00; }
-      66.666% { color: #00ffff; }
-      83.333% { color: #00aeff; }
-      100% { color: #ff00ff; }
-    }
-  </style>
-</head>
-<body>
-  <div class="etiqueta">Hora de España</div>
-  <div class="reloj" id="relojEspana"></div>
-  <div class="etiqueta">Hora en Canarias</div>
-  <div class="reloj" id="relojCanarias"></div>
-
-  <script>
-    function actualizarReloj() {
-      const fechaActual = new Date();
-
-      // Hora de España (horario local del navegador)
-      const horasEspana = fechaActual.getHours();
-      const minutosEspana = agregarCeroDelante(fechaActual.getMinutes());
-      const ampmEspana = horasEspana >= 12 ? 'PM' : 'AM';
-      document.getElementById('relojEspana').innerText = `${formato12Horas(horasEspana)}:${minutosEspana} ${ampmEspana}`;
-
-      // Hora en Canarias (España menos una hora)
-      const fechaCanarias = new Date(fechaActual.getTime() - 3600000);
-      const horasCanarias = fechaCanarias.getHours();
-      const minutosCanarias = agregarCeroDelante(fechaCanarias.getMinutes());
-      const ampmCanarias = horasCanarias >= 12 ? 'PM' : 'AM';
-      document.getElementById('relojCanarias').innerText = `${formato12Horas(horasCanarias)}:${minutosCanarias} ${ampmCanarias}`;
-    }
-
-    function agregarCeroDelante(numero) {
-      return numero < 10 ? '0' + numero : numero;
-    }
-
-    function formato12Horas(horas) {
-      return horas % 12 || 12;
-    }
-
-    setInterval(actualizarReloj, 1000);
-    actualizarReloj();
-  </script>
-</body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reloj Twitch - Digital AM/PM</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0); 
+    }
+
+    .contenedor {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .etiqueta {
+      font-size: 90px;
+      font-weight: normal;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      margin-bottom: -5px;
+      background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #ff00ff, #ff0000);
+      background-size: 400%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: rainbow 8s linear infinite;
+      font-family: 'VT323', monospace;
+      -webkit-text-stroke: 1px rgba(0, 0, 0, 0.5);
+    }
+
+    .reloj {
+      font-size: 160px; /* Ajustado para que quepa el AM/PM */
+      font-family: 'VT323', monospace;
+      color: #ffffff;
+      line-height: 1;
+      margin-bottom: 45px;
+      text-shadow: 
+        0 0 10px #00d2ff, 
+        0 0 25px #00d2ff, 
+        0 0 50px #00d2ff;
+      -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.8);
+      white-space: nowrap; /* Evita que el AM/PM salte de línea */
+    }
+
+    @keyframes rainbow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    #espacio-extra { margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <div class="contenedor">
+    <div class="etiqueta">Península</div>
+    <div class="reloj" id="relojEspana">--:-- --</div>
+
+    <div class="etiqueta" id="espacio-extra">Canarias</div>
+    <div class="reloj" id="relojCanarias">--:-- --</div>
+  </div>
+
+  <script>
+    let offsetMilisegundos = 0;
+
+    async function sincronizarHora() {
+      try {
+        const url = "https://worldtimeapi.org/api/timezone/Europe/Madrid";
+        const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(url);
+        
+        const respuesta = await fetch(proxy);
+        const data = await respuesta.json();
+        const json = JSON.parse(data.contents);
+        
+        const horaInternet = new Date(json.datetime).getTime();
+        const horaLocal = Date.now();
+        
+        offsetMilisegundos = horaInternet - horaLocal;
+      } catch (e) {
+        console.warn("Usando hora del sistema...");
+      }
+    }
+
+    function actualizarReloj() {
+      const ahora = new Date(Date.now() + offsetMilisegundos);
+
+      // CONFIGURACIÓN AM/PM
+      const opciones = { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: true // ACTIVADO EL FORMATO 12h
+      };
+      
+      // Usamos 'en-US' para asegurar que el formato AM/PM sea estándar
+      const hEspana = ahora.toLocaleTimeString('en-US', { ...opciones, timeZone: 'Europe/Madrid' });
+      const hCanarias = ahora.toLocaleTimeString('en-US', { ...opciones, timeZone: 'Atlantic/Canary' });
+
+      document.getElementById('relojEspana').innerText = hEspana;
+      document.getElementById('relojCanarias').innerText = hCanarias;
+    }
+
+    sincronizarHora();
+    setInterval(actualizarReloj, 1000);
+    setInterval(sincronizarHora, 600000); 
+  </script>
+</body>
 </html>
