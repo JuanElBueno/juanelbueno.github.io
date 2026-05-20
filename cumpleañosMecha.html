@@ -312,19 +312,21 @@ button:hover {
     // -------------------------------------------------
     // 🌙 MODO OSCURO
     // -------------------------------------------------
+    let modoOscuro = false;
     function toggleTheme() {
         const body = document.body;
         const btn = document.getElementById("themeToggle");
 
-        if (body.style.backgroundColor === "white") {
+        if (modoOscuro) {
+            body.style.backgroundColor = "#f0f0f0";
+            body.style.color = "#333";
+            btn.textContent = "Oscuro";
+        } else {
             body.style.backgroundColor = "#333";
             body.style.color = "white";
             btn.textContent = "Claro";
-        } else {
-            body.style.backgroundColor = "white";
-            body.style.color = "#333";
-            btn.textContent = "Oscuro";
         }
+        modoOscuro = !modoOscuro;
     }
 
     // -------------------------------------------------

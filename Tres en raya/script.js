@@ -2,7 +2,6 @@ var mapa= [0,0,0,0,0,0,0,0,0];
 var jugador=1;
 var njugadores=0;
 var eleccion=0;
-var esquinas=[0,2,6,8];
 function resetear(){
 	document.getElementById("opcion1").removeAttribute("hidden", "hidden");
 	document.getElementById("opcion2").setAttribute("hidden", "hidden");
