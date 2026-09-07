@@ -160,24 +160,22 @@
         document.getElementById('inputAnio').value = '';
     }
 
-    let modoOscuro = false;
     function toggleTheme() {
         const body = document.body;
         const themeToggleBtn = document.getElementById('themeToggle');
-        if (modoOscuro) {
-            body.style.backgroundColor = '#f0f0f0';
+        if (body.style.backgroundColor === 'white') {
+            body.style.backgroundColor = '#333';
+            body.style.color = 'white';
+            themeToggleBtn.textContent = 'Claro';
+            themeToggleBtn.style.backgroundColor = 'white';
+            themeToggleBtn.style.color = '#333';
+        } else {
+            body.style.backgroundColor = 'white';
             body.style.color = '#333';
             themeToggleBtn.textContent = 'Oscuro';
             themeToggleBtn.style.backgroundColor = '#333';
             themeToggleBtn.style.color = 'white';
-        } else {
-            body.style.backgroundColor = '#333';
-            body.style.color = 'white';
-            themeToggleBtn.textContent = 'Claro';
-            themeToggleBtn.style.backgroundColor = '#f0f0f0';
-            themeToggleBtn.style.color = '#333';
         }
-        modoOscuro = !modoOscuro;
     }
 
     // Actualiza la barra y el contador cada segundo

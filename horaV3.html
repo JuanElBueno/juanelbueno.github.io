@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -51,7 +51,7 @@
         0 0 25px #00d2ff, 
         0 0 50px #00d2ff;
       -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.8);
-      white-space: nowrap; /* Evita que el AM/PM salte de lÃ­nea */
+      white-space: nowrap; /* Evita que el AM/PM salte de línea */
     }
 
     @keyframes rainbow {
@@ -65,7 +65,7 @@
 <body>
 
   <div class="contenedor">
-    <div class="etiqueta">PenÃ­nsula</div>
+    <div class="etiqueta">Península</div>
     <div class="reloj" id="relojEspana">--:-- --</div>
 
     <div class="etiqueta" id="espacio-extra">Canarias</div>
@@ -96,14 +96,14 @@
     function actualizarReloj() {
       const ahora = new Date(Date.now() + offsetMilisegundos);
 
-      // CONFIGURACIÃ“N AM/PM
+      // CONFIGURACIÓN AM/PM
       const opciones = { 
         hour: '2-digit', 
         minute: '2-digit', 
         hour12: true // ACTIVADO EL FORMATO 12h
       };
       
-      // Usamos 'en-US' para asegurar que el formato AM/PM sea estÃ¡ndar
+      // Usamos 'en-US' para asegurar que el formato AM/PM sea estándar
       const hEspana = ahora.toLocaleTimeString('en-US', { ...opciones, timeZone: 'Europe/Madrid' });
       const hCanarias = ahora.toLocaleTimeString('en-US', { ...opciones, timeZone: 'Atlantic/Canary' });
 
@@ -111,8 +111,7 @@
       document.getElementById('relojCanarias').innerText = hCanarias;
     }
 
-    sincronizarHora();
-    actualizarReloj();
+    sincronizarHora();
     setInterval(actualizarReloj, 1000);
     setInterval(sincronizarHora, 600000); 
   </script>
