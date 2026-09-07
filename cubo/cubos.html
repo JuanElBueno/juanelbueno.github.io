@@ -5,85 +5,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cubo 3D "DIRECTO"</title>
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      margin: 0;
-      padding: 0;
+      width: 100vw;
       height: 100vh;
-      background-color: #000;
-      font-family: Arial, sans-serif;
+      background: transparent;
+      font-family: 'Segoe UI', Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     }
 
-    /* Contenedor del texto DIRECTO */
     .live-text {
       display: flex;
       align-items: center;
-      margin-bottom: 30px;
-      position: relative;
+      margin-bottom: 40px;
+      filter: drop-shadow(0 0 12px rgba(255, 0, 0, 0.6));
     }
 
-    /* 🔴 Punto parpadeante */
     .live-text .dot {
-      color: red;
-      font-size: 50px; /* mismo tamaño que el texto */
+      color: #ff0000;
+      font-size: 50px;
       margin-right: 15px;
-      animation: blinkDot 1s infinite;
+      animation: blinkDot 1s infinite ease-in-out;
       display: inline-block;
-      font-style: normal; /* sin cursiva */
       font-weight: bold;
-      -webkit-text-stroke: 8px black; /* contorno negro */
+      text-shadow: 0 0 20px rgba(255, 0, 0, 0.9), 0 0 40px rgba(255, 0, 0, 0.5);
     }
 
-    /* Palabra DIRECTO en cursiva */
     .live-text .text {
-      color: red;
-      font-size: 60px;
-      font-style: italic; /* cursiva solo aquí */
-      font-weight: bold;
+      color: #ff0000;
+      font-size: 64px;
+      font-style: italic;
+      font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 3px;
-      -webkit-text-stroke: 4px black; /* contorno negro */
+      letter-spacing: 6px;
+      text-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 0, 0, 0.4), 2px 2px 0 #000;
     }
 
     @keyframes blinkDot {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.3; transform: scale(1.4); }
+      50% { opacity: 0.2; transform: scale(1.5); }
     }
 
     .container {
-      perspective: 1000px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      perspective: 800px;
+      perspective-origin: center center;
     }
 
     .cube {
-      width: 200px;
-      height: 200px;
+      width: 220px;
+      height: 220px;
       position: relative;
       transform-style: preserve-3d;
-      animation: rotateCube 10s infinite linear;
+      animation: rotateCube 8s infinite ease-in-out;
     }
 
     .face {
       position: absolute;
-      width: 200px;
-      height: 200px;
+      width: 220px;
+      height: 220px;
       background-size: cover;
       background-position: center;
-      backface-visibility: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      backface-visibility: visible;
+      border: 2px solid rgba(255, 0, 0, 0.3);
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
     }
 
-    .front  { transform: translateZ(100px); background-image: url('cubo.png'); }
-    .back   { transform: rotateY(180deg) translateZ(100px); background-image: url('cubo.png'); }
-    .left   { transform: rotateY(-90deg) translateZ(100px); background-image: url('cubo.png'); }
-    .right  { transform: rotateY(90deg) translateZ(100px); background-image: url('cubo.png'); }
-    .top    { transform: rotateX(90deg) translateZ(100px); background-image: url('cubo.png'); }
-    .bottom { transform: rotateX(-90deg) translateZ(100px); background-image: url('cubo.png'); }
+    .front  { transform: translateZ(110px); background-image: url('cuboV2.png'); }
+    .back   { transform: rotateY(180deg) translateZ(110px); background-image: url('cuboV2.png'); }
+    .left   { transform: rotateY(-90deg) translateZ(110px); background-image: url('cuboV2.png'); }
+    .right  { transform: rotateY(90deg) translateZ(110px); background-image: url('cuboV2.png'); }
+    .top    { transform: rotateX(90deg) translateZ(110px); background-image: url('cuboV2.png'); }
+    .bottom { transform: rotateX(-90deg) translateZ(110px); background-image: url('cuboV2.png'); }
 
     @keyframes rotateCube {
       0% { transform: rotateY(0deg); }

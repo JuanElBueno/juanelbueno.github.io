@@ -1,84 +1,228 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="utf-8"/>
-  <title>Me cago en todo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mis Proyectos</title>
   <link rel="shortcut icon" href="icono_pagina.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    /* General styling */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f0f0f0;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        height: 100vh;
-        flex-direction: column;
-        color: #333;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: #e0e0e0;
+      overflow-x: hidden;
     }
 
-    /* Header styling */
-    h1.Pag {
-        font-size: 2.5em;
-        color: #2c3e50;
-        margin-bottom: 20px;
-        text-align: center;
+    /* Fondo animado */
+    .bg-orbs {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .bg-orbs span {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.35;
+      animation: float 18s ease-in-out infinite alternate;
+    }
+    .bg-orbs span:nth-child(1) { width: 400px; height: 400px; background: #7c3aed; top: -10%; left: -5%; animation-delay: 0s; }
+    .bg-orbs span:nth-child(2) { width: 350px; height: 350px; background: #06b6d4; bottom: -10%; right: -5%; animation-delay: -6s; }
+    .bg-orbs span:nth-child(3) { width: 300px; height: 300px; background: #ec4899; top: 40%; left: 50%; animation-delay: -12s; }
+
+    @keyframes float {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(60px, -40px) scale(1.15); }
     }
 
-    /* Navbar styling */
-    ul.navbar {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        background-color: #34495e;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 1111px;
+    /* Contenido principal */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 20px 40px;
     }
 
-    ul.navbar li {
-        float: left;
-        width: 100%; /* For mobile first design */
+    /* Hero */
+    .hero {
+      text-align: center;
+      margin-bottom: 50px;
+      animation: fadeInDown 0.8s ease;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      background: linear-gradient(90deg, #a78bfa, #38bdf8, #f472b6);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 4s ease infinite;
+    }
+    .hero p {
+      margin-top: 12px;
+      font-size: 1.1rem;
+      color: #a0a0b8;
     }
 
-    ul.navbar li a {
-        display: block;
-        color: white;
-        text-align: center;
-        padding: 14px 20px;
-        text-decoration: none;
-        font-size: 1.1em;
-        transition: background-color 0.3s;
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Hover effect ndada */
-    ul.navbar li a:hover {
-        background-color: #1abc9c;
+    /* Grid de tarjetas */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
     }
 
-    /* For larger screens, make the navbar horizontal */
-    @media (min-width: 600px) {
-        ul.navbar li {
-            width: auto;
-        }
+    /* Tarjeta */
+    .card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.04));
+      pointer-events: none;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .card .icon {
+      font-size: 2.4rem;
+      line-height: 1;
+    }
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #f0f0f5;
+    }
+    .card p {
+      font-size: 0.88rem;
+      color: #9090a8;
+      line-height: 1.45;
+      flex: 1;
+    }
+    .card .arrow {
+      align-self: flex-end;
+      font-size: 1.2rem;
+      color: #60a0fa;
+      transition: transform 0.3s ease;
+    }
+    .card:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    /* Colores por tipo de proyecto */
+    .card[data-color="purple"]  { border-left: 3px solid #a78bfa; }
+    .card[data-color="blue"]    { border-left: 3px solid #38bdf8; }
+    .card[data-color="pink"]    { border-left: 3px solid #f472b6; }
+    .card[data-color="green"]   { border-left: 3px solid #4ade80; }
+    .card[data-color="orange"]  { border-left: 3px solid #fb923c; }
+    .card[data-color="cyan"]    { border-left: 3px solid #22d3ee; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 20px 24px;
+      color: #5a5a72;
+      font-size: 0.82rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 500px) {
+      .container { padding: 40px 14px 30px; }
+      .grid { grid-template-columns: 1fr; gap: 14px; }
+      .card { padding: 22px 18px; }
     }
   </style>
 </head>
 
 <body>
-  <h1 class="Pag">Pagina principal</h1>
-  <ul class="navbar">
-    <li><a href="probando.html">Video de minecraft</a></li>
-    <li><a href="El tiempo de descarga.html">El tiempo de descarga</a></li>
-    <li><a href="Tres en raya/index.html">Tres en raya</a></li>
-    <li><a href="cumpleaños.html">Cuanto me queda para mi cumpleaños</a></li>
-    <!-- <li><a href="probando/">Cuanto me queda para mi cumpleaños</a></li>
-    <li><a href="version movil/">Cuanto me queda para mi cumpleaños versión móvil</a></li> -->
-    <li><a href="Time.html">Hora 12h</a></li>
-    <li><a href="Time24.html">Hora 24h</a></li>
-  </ul>
+  <div class="bg-orbs">
+    <span></span><span></span><span></span>
+  </div>
+
+  <div class="container">
+    <header class="hero">
+      <h1>Mis Proyectos</h1>
+      <p>Todos mis experimentos web en un solo sitio</p>
+    </header>
+
+    <div class="grid">
+      <a href="cumpleaños.html" class="card" data-color="pink">
+        <span class="icon">🎂</span>
+        <h2>Cuenta regresiva</h2>
+        <p>Calcula cuánto falta para tu cumpleaños</p>
+        <span class="arrow">&#8594;</span>
+      </a>
+
+      <a href="Time.html" class="card" data-color="blue">
+        <span class="icon">🕐</span>
+        <h2>Hora 12h</h2>
+        <p>Reloj en formato de 12 horas</p>
+        <span class="arrow">&#8594;</span>
+      </a>
+
+      <a href="Time24.html" class="card" data-color="cyan">
+        <span class="icon">⏰</span>
+        <h2>Hora 24h</h2>
+        <p>Reloj en formato de 24 horas</p>
+        <span class="arrow">&#8594;</span>
+      </a>
+
+      <a href="El tiempo de descarga.html" class="card" data-color="green">
+        <span class="icon">📥</span>
+        <h2>Tiempo de descarga</h2>
+        <p>Calcula cuánto tarda en descargar un archivo</p>
+        <span class="arrow">&#8594;</span>
+      </a>
+
+      <a href="Tres en raya/index.html" class="card" data-color="orange">
+        <span class="icon">🎮</span>
+        <h2>Tres en raya</h2>
+        <p>Juega al clásico tres en raya</p>
+        <span class="arrow">&#8594;</span>
+      </a>
+
+      <a href="probando.html" class="card" data-color="purple">
+        <span class="icon">⛏️</span>
+        <h2>Video de Minecraft</h2>
+        <p>Un video random de Minecraft</p>
+        <span class="arrow">&#8594;</span>
+      </a>
+    </div>
+  </div>
+
+  <footer>Creado con ganas de aprender</footer>
 </body>
 </html>

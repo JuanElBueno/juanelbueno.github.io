@@ -1,119 +1,132 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Reloj Twitch - Digital AM/PM</title>
-  
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: rgba(0, 0, 0, 0); 
-    }
-
-    .contenedor {
-      text-align: center;
-      padding: 20px;
-    }
-
-    .etiqueta {
-      font-size: 90px;
-      font-weight: normal;
-      text-transform: uppercase;
-      letter-spacing: 4px;
-      margin-bottom: -5px;
-      background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #ff00ff, #ff0000);
-      background-size: 400%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      animation: rainbow 8s linear infinite;
-      font-family: 'VT323', monospace;
-      -webkit-text-stroke: 1px rgba(0, 0, 0, 0.5);
-    }
-
-    .reloj {
-      font-size: 160px; /* Ajustado para que quepa el AM/PM */
-      font-family: 'VT323', monospace;
-      color: #ffffff;
-      line-height: 1;
-      margin-bottom: 45px;
-      text-shadow: 
-        0 0 10px #00d2ff, 
-        0 0 25px #00d2ff, 
-        0 0 50px #00d2ff;
-      -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.8);
-      white-space: nowrap; /* Evita que el AM/PM salte de línea */
-    }
-
-    @keyframes rainbow {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 100% 50%; }
-    }
-
-    #espacio-extra { margin-top: 20px; }
-  </style>
-</head>
-<body>
-
-  <div class="contenedor">
-    <div class="etiqueta">Península</div>
-    <div class="reloj" id="relojEspana">--:-- --</div>
-
-    <div class="etiqueta" id="espacio-extra">Canarias</div>
-    <div class="reloj" id="relojCanarias">--:-- --</div>
-  </div>
-
-  <script>
-    let offsetMilisegundos = 0;
-
-    async function sincronizarHora() {
-      try {
-        const url = "https://worldtimeapi.org/api/timezone/Europe/Madrid";
-        const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(url);
-        
-        const respuesta = await fetch(proxy);
-        const data = await respuesta.json();
-        const json = JSON.parse(data.contents);
-        
-        const horaInternet = new Date(json.datetime).getTime();
-        const horaLocal = Date.now();
-        
-        offsetMilisegundos = horaInternet - horaLocal;
-      } catch (e) {
-        console.warn("Usando hora del sistema...");
-      }
-    }
-
-    function actualizarReloj() {
-      const ahora = new Date(Date.now() + offsetMilisegundos);
-
-      // CONFIGURACIÓN AM/PM
-      const opciones = { 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        hour12: true // ACTIVADO EL FORMATO 12h
-      };
-      
-      // Usamos 'en-US' para asegurar que el formato AM/PM sea estándar
-      const hEspana = ahora.toLocaleTimeString('en-US', { ...opciones, timeZone: 'Europe/Madrid' });
-      const hCanarias = ahora.toLocaleTimeString('en-US', { ...opciones, timeZone: 'Atlantic/Canary' });
-
-      document.getElementById('relojEspana').innerText = hEspana;
-      document.getElementById('relojCanarias').innerText = hCanarias;
-    }
-
-    sincronizarHora();
-    setInterval(actualizarReloj, 1000);
-    setInterval(sincronizarHora, 600000); 
-  </script>
-</body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reloj Twitch - Digital AM/PM</title>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0);
+    }
+
+    .contenedor {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .bloque {
+      text-align: center;
+      padding: 6px 18px;
+    }
+
+    .etiqueta {
+      font-size: 90px;
+      font-weight: normal;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 0;
+      background: linear-gradient(90deg, #ff4d4d, #ffb84d, #4dff88, #4dceff, #c94dff, #ff4d4d);
+      background-size: 400%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: rainbow 6s linear infinite;
+      font-family: 'VT323', monospace;
+      -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.6);
+    }
+
+    .reloj {
+      font-size: 160px;
+      font-family: 'VT323', monospace;
+      color: #ffffff;
+      line-height: 1;
+      margin: 0;
+      text-shadow:
+        0 0 8px #00d2ff,
+        0 0 20px #00d2ff,
+        0 0 40px rgba(0, 210, 255, 0.6);
+      -webkit-text-stroke: 1px rgba(0, 0, 0, 0.7);
+      white-space: nowrap;
+    }
+
+    @keyframes rainbow {
+      0%   { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    .separador {
+      width: 180px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 210, 255, 0.5), transparent);
+      margin: 2px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <div class="bloque">
+      <div class="etiqueta">Península</div>
+      <div class="reloj" id="relojEspana">--:-- --</div>
+    </div>
+
+    <div class="separador"></div>
+
+    <div class="bloque">
+      <div class="etiqueta">Canarias</div>
+      <div class="reloj" id="relojCanarias">--:-- --</div>
+    </div>
+  </div>
+
+  <script>
+    let timestampInternet = null;
+
+    async function fetchJSON(url) {
+      const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(url);
+      const resp = await fetch(proxy);
+      const data = await resp.json();
+      return JSON.parse(data.contents);
+    }
+
+    async function sincronizarHora() {
+      try {
+        const json = await fetchJSON("https://worldtimeapi.org/api/timezone/Europe/Madrid");
+        timestampInternet = Date.parse(json.datetime);
+      } catch (e1) {
+        console.warn("worldtimeapi fallo, intentando timeapi.io...");
+        try {
+          const json = await fetchJSON("http://worldclockapi.com/api/json/cet/now");
+          timestampInternet = Date.parse(json.currentDateTime);
+        } catch (e2) {
+          console.error("No se pudo obtener hora de internet:", e1, e2);
+        }
+      }
+    }
+
+    function actualizarReloj() {
+      const ahora = timestampInternet ? new Date(timestampInternet) : new Date();
+      const opciones = { hour: '2-digit', minute: '2-digit', hour12: true };
+      document.getElementById('relojEspana').innerText =
+        ahora.toLocaleTimeString('en-US', { ...opciones, timeZone: 'Europe/Madrid' });
+      document.getElementById('relojCanarias').innerText =
+        ahora.toLocaleTimeString('en-US', { ...opciones, timeZone: 'Atlantic/Canary' });
+
+      if (timestampInternet) timestampInternet += 1000;
+    }
+
+    sincronizarHora();
+    setInterval(actualizarReloj, 1000);
+    setInterval(sincronizarHora, 60000);
+  </script>
+</body>
 </html>
