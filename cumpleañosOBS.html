@@ -1,237 +1,400 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        /* ESTILOS "COMING SOON / ACCESO" PARA OBS */
-        body {
-            font-family: 'Courier New', Courier, monospace; 
-            margin: 0;
-            padding: 20px;
-            background-color: transparent; 
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden; 
-        }
-
-        .contenedor-principal {
-            text-align: center;
-            background: rgba(10, 10, 15, 0.85); /* Fondo un poco más oscuro para dar contraste */
-            padding: 30px 40px;
-            border-radius: 12px;
-            border: 2px solid #00ffcc;
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3), inset 0 0 15px rgba(0, 255, 204, 0.1);
-            width: 450px; /* Un poco más ancho para que quepa bien el texto grande */
-        }
-
-        .titulo-sistema {
-            font-size: 22px;
-            color: #00ffcc;
-            margin-bottom: 25px;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            text-shadow: 0 0 8px #00ffcc, 2px 2px 4px black;
-            font-weight: bold;
-        }
-
-        /* Contenedor de las cajas */
-        .cajas-tiempo {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-bottom: 25px;
-        }
-
-        /* Estilo de cada cuadrado individual */
-        .caja {
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #ff0055;
-            border-radius: 8px;
-            padding: 15px 5px;
-            flex: 1; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4), 2px 2px 5px black;
-            position: relative;
-        }
-
-        .caja::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 2px;
-            background: #ff0055;
-            opacity: 0.5;
-        }
-
-        .numero {
-            font-size: 40px;
-            font-weight: bold;
-            color: #ffffff;
-            text-shadow: 2px 2px 4px black, 0 0 15px #ff0055;
-            line-height: 1;
-            margin-bottom: 5px;
-        }
-
-        .etiqueta {
-            font-size: 14px;
-            font-weight: bold;
-            color: #d0d0d0;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-shadow: 1px 1px 2px black;
-        }
-
-        /* --- ESTILOS MEJORADOS PARA EL PORCENTAJE --- */
-        .contenedor-progreso {
-            width: 100%;
-            text-align: left;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 10px;
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
-
-        .texto-progreso {
-            color: #ffffff; /* Texto blanco para destacar máximo */
-            font-size: 20px; /* Mucho más grande */
-            font-weight: bold; /* En negrita */
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            /* Sombra negra durísima para que resalte en OBS + brillo cyan */
-            text-shadow: 
-                -1px -1px 0 #000,  
-                 1px -1px 0 #000,
-                -1px  1px 0 #000,
-                 1px  1px 0 #000,
-                 3px  3px 5px rgba(0,0,0,0.9),
-                 0 0 10px #00ffcc;
-        }
-
-        .barra-fondo {
-            width: 100%;
-            height: 18px; /* Barra un poco más gruesa */
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #00ffcc;
-            border-radius: 9px;
-            overflow: hidden;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 2px 2px 5px black;
-        }
-
-        .barra-llenado {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #00ffcc, #ff0055);
-            box-shadow: 0 0 15px #ff0055;
-            transition: width 1s linear;
-        }
-
-        .mensaje-final {
-            color: #00ffcc;
-            font-size: 35px;
-            text-shadow: 0 0 20px #00ffcc, 2px 2px 5px black;
-            animation: parpadeo 1s infinite alternate;
-        }
-
-        @keyframes parpadeo {
-            from { opacity: 1; text-shadow: 0 0 20px #00ffcc, 0 0 30px #00ffcc, 2px 2px 5px black; }
-            to { opacity: 0.5; text-shadow: 0 0 10px #00ffcc, 2px 2px 5px black; }
-        }
-    </style>
-</head>
-<body>
-
-<div class="contenedor-principal">
-    <div class="titulo-sistema" id="titulo">Acceso al Cumpleaños en:</div>
-    
-    <div id="contador" class="cajas-tiempo">
-        <div class="caja">
-            <span class="numero" id="dias">00</span>
-            <span class="etiqueta">Días</span>
-        </div>
-        <div class="caja">
-            <span class="numero" id="horas">00</span>
-            <span class="etiqueta">Hrs</span>
-        </div>
-        <div class="caja">
-            <span class="numero" id="minutos">00</span>
-            <span class="etiqueta">Min</span>
-        </div>
-        <div class="caja">
-            <span class="numero" id="segundos">00</span>
-            <span class="etiqueta">Seg</span>
-        </div>
-    </div>
-
-    <div class="contenedor-progreso" id="zona-progreso">
-        <div class="texto-progreso">
-            <span>CARGANDO...</span>
-            <span id="texto-porcentaje">0.00000%</span>
-        </div>
-        <div class="barra-fondo">
-            <div id="barra-llenado" class="barra-llenado"></div>
-        </div>
-    </div>
-</div>
-
-<script>
-    // Configura la fecha de tu cumpleaños (Año, Mes-1, Día)
-    // Recuerda: Enero es 0, Febrero es 1... Junio es 5.
-    let fechaCumpleanos = new Date(2024, 5, 25); 
-    
-    let intervalId = null;
-
-    function actualizarContador() {
-        const fechaActual = new Date();
-        let tiempoRestante = fechaCumpleanos - fechaActual;
-
-        if (tiempoRestante <= 0) {
-            const esHoy = fechaActual.getDate() === fechaCumpleanos.getDate() &&
-                          fechaActual.getMonth() === fechaCumpleanos.getMonth();
-
-            if (esHoy) {
-                clearInterval(intervalId);
-                document.getElementById('contador').innerHTML = "<div class='mensaje-final'>¡ACCESO CONCEDIDO!<br>🎉 FELIZ CUMPLEAÑOS 🎉</div>";
-                document.getElementById('titulo').style.display = 'none';
-                
-                document.getElementById('barra-llenado').style.width = '100%';
-                document.getElementById('texto-porcentaje').textContent = '100.00000%';
-                document.getElementById('zona-progreso').querySelector('span').textContent = 'SISTEMA DESBLOQUEADO';
-                return;
-            } else {
-                fechaCumpleanos.setFullYear(fechaActual.getFullYear());
-                if (fechaCumpleanos < fechaActual) {
-                    fechaCumpleanos.setFullYear(fechaActual.getFullYear() + 1);
-                }
-                tiempoRestante = fechaCumpleanos - fechaActual;
-            }
-        }
-
-        const dias = Math.floor(tiempoRestante / (24 * 60 * 60 * 1000));
-        const horas = Math.floor((tiempoRestante % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-        const minutos = Math.floor((tiempoRestante % (60 * 60 * 1000)) / (60 * 1000));
-        const segundos = Math.floor((tiempoRestante % (60 * 1000)) / 1000);
-
-        document.getElementById('dias').textContent = dias.toString().padStart(2, '0');
-        document.getElementById('horas').textContent = horas.toString().padStart(2, '0');
-        document.getElementById('minutos').textContent = minutos.toString().padStart(2, '0');
-        document.getElementById('segundos').textContent = segundos.toString().padStart(2, '0');
-
-        const unAnoMs = 365 * 24 * 60 * 60 * 1000;
-        const progreso = Math.max(0, 100 - (tiempoRestante / unAnoMs) * 100);
-
-        document.getElementById('barra-llenado').style.width = progreso + '%';
-        document.getElementById('texto-porcentaje').textContent = progreso.toFixed(5) + '%';
-    }
-
-    intervalId = setInterval(actualizarContador, 1000);
-    actualizarContador();
-</script>
-
-</body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta Regresiva OBS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .contenedor-principal {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(10, 10, 30, 0.95), rgba(20, 10, 40, 0.95));
+            padding: 35px 45px;
+            border-radius: 20px;
+            border: 2px solid;
+            border-image: linear-gradient(135deg, #00f0ff, #ff00aa, #ffaa00) 1;
+            box-shadow:
+                0 0 30px rgba(0, 240, 255, 0.4),
+                0 0 60px rgba(255, 0, 170, 0.2),
+                inset 0 0 30px rgba(0, 240, 255, 0.1);
+            width: 520px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contenedor-principal::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 240, 255, 0.1), transparent, rgba(255, 0, 170, 0.1), transparent);
+            animation: rotateBg 8s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes rotateBg {
+            100% { transform: rotate(360deg); }
+        }
+
+        .contenedor-principal > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .titulo-sistema {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 900;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            background: linear-gradient(90deg, #00f0ff, #ff00aa, #ffcc00, #00f0ff);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease infinite;
+            text-shadow: none;
+            filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.5));
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .cake-icon {
+            font-size: 50px;
+            display: block;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite, glow 2s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 15px rgba(255, 200, 0, 0.6));
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.05); }
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 10px rgba(255, 200, 0, 0.4)); }
+            to { filter: drop-shadow(0 0 25px rgba(255, 200, 0, 0.8)); }
+        }
+
+        .cajas-tiempo {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .caja {
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.8), rgba(10, 5, 20, 0.95));
+            border: 2px solid transparent;
+            border-radius: 14px;
+            padding: 18px 8px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .caja:nth-child(1) { border-color: #00f0ff; box-shadow: 0 0 20px rgba(0, 240, 255, 0.4), inset 0 0 15px rgba(0, 240, 255, 0.1); }
+        .caja:nth-child(2) { border-color: #ff00aa; box-shadow: 0 0 20px rgba(255, 0, 170, 0.4), inset 0 0 15px rgba(255, 0, 170, 0.1); }
+        .caja:nth-child(3) { border-color: #ffcc00; box-shadow: 0 0 20px rgba(255, 204, 0, 0.4), inset 0 0 15px rgba(255, 204, 0, 0.1); }
+        .caja:nth-child(4) { border-color: #aa55ff; box-shadow: 0 0 20px rgba(170, 85, 255, 0.4), inset 0 0 15px rgba(170, 85, 255, 0.1); }
+
+        .caja::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 3px;
+            animation: scanLine 3s linear infinite;
+        }
+
+        .caja:nth-child(1)::before { background: linear-gradient(90deg, transparent, #00f0ff, transparent); animation-delay: 0s; }
+        .caja:nth-child(2)::before { background: linear-gradient(90deg, transparent, #ff00aa, transparent); animation-delay: 0.5s; }
+        .caja:nth-child(3)::before { background: linear-gradient(90deg, transparent, #ffcc00, transparent); animation-delay: 1s; }
+        .caja:nth-child(4)::before { background: linear-gradient(90deg, transparent, #aa55ff, transparent); animation-delay: 1.5s; }
+
+        @keyframes scanLine {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+
+        .numero {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 42px;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .caja:nth-child(1) .numero { color: #00f0ff; text-shadow: 0 0 15px #00f0ff, 0 0 30px rgba(0, 240, 255, 0.5); }
+        .caja:nth-child(2) .numero { color: #ff00aa; text-shadow: 0 0 15px #ff00aa, 0 0 30px rgba(255, 0, 170, 0.5); }
+        .caja:nth-child(3) .numero { color: #ffcc00; text-shadow: 0 0 15px #ffcc00, 0 0 30px rgba(255, 204, 0, 0.5); }
+        .caja:nth-child(4) .numero { color: #aa55ff; text-shadow: 0 0 15px #aa55ff, 0 0 30px rgba(170, 85, 255, 0.5); }
+
+        .etiqueta {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            color: #888;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .contenedor-progreso {
+            width: 100%;
+            text-align: left;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+        }
+
+        .texto-progreso {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .texto-progreso span:first-child {
+            font-family: 'Rajdhani', sans-serif;
+            color: #00f0ff;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        #texto-porcentaje {
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+            font-size: 22px;
+            font-weight: 900;
+            text-shadow: 0 0 10px #00f0ff, 0 0 20px rgba(0, 240, 255, 0.5);
+        }
+
+        .barra-fondo {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(0, 240, 255, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .barra-llenado {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00f0ff, #ff00aa, #ffcc00);
+            background-size: 200% 100%;
+            animation: barGradient 3s ease infinite;
+            border-radius: 10px;
+            position: relative;
+            transition: width 1s linear;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.6), 0 0 40px rgba(255, 0, 170, 0.3);
+        }
+
+        .barra-llenado::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+            animation: shimmer 2s linear infinite;
+        }
+
+        @keyframes barGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .mensaje-final {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(90deg, #00f0ff, #ff00aa, #ffcc00);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 2s ease infinite, pulse 1.5s ease-in-out infinite;
+            line-height: 1.4;
+            padding: 20px 0;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .particulas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particula {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00f0ff;
+            border-radius: 50%;
+            animation: float linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="particulas" id="particulas"></div>
+
+    <div class="contenedor-principal">
+        <span class="cake-icon">🎂</span>
+        <div class="titulo-sistema" id="titulo">Acceso al Cumpleaños en:</div>
+
+        <div id="contador" class="cajas-tiempo">
+            <div class="caja">
+                <span class="numero" id="dias">00</span>
+                <span class="etiqueta">Días</span>
+            </div>
+            <div class="caja">
+                <span class="numero" id="horas">00</span>
+                <span class="etiqueta">Hrs</span>
+            </div>
+            <div class="caja">
+                <span class="numero" id="minutos">00</span>
+                <span class="etiqueta">Min</span>
+            </div>
+            <div class="caja">
+                <span class="numero" id="segundos">00</span>
+                <span class="etiqueta">Seg</span>
+            </div>
+        </div>
+
+        <div class="contenedor-progreso" id="zona-progreso">
+            <div class="texto-progreso">
+                <span>CARGANDO...</span>
+                <span id="texto-porcentaje">0.00000%</span>
+            </div>
+            <div class="barra-fondo">
+                <div id="barra-llenado" class="barra-llenado"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function crearParticulas() {
+            const contenedor = document.getElementById('particulas');
+            const colores = ['#00f0ff', '#ff00aa', '#ffcc00', '#aa55ff', '#00ff88'];
+            for (let i = 0; i < 40; i++) {
+                const p = document.createElement('div');
+                p.className = 'particula';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.animationDuration = (6 + Math.random() * 8) + 's';
+                p.style.animationDelay = (Math.random() * 10) + 's';
+                p.style.background = colores[Math.floor(Math.random() * colores.length)];
+                p.style.width = (2 + Math.random() * 4) + 'px';
+                p.style.height = p.style.width;
+                p.style.boxShadow = `0 0 6px ${p.style.background}`;
+                contenedor.appendChild(p);
+            }
+        }
+        crearParticulas();
+
+        let fechaCumpleanos = new Date(2024, 5, 25);
+        let intervalId = null;
+
+        function actualizarContador() {
+            const fechaActual = new Date();
+            let tiempoRestante = fechaCumpleanos - fechaActual;
+
+            if (tiempoRestante <= 0) {
+                const esHoy = fechaActual.getDate() === fechaCumpleanos.getDate() &&
+                              fechaActual.getMonth() === fechaCumpleanos.getMonth();
+
+                if (esHoy) {
+                    clearInterval(intervalId);
+                    document.getElementById('contador').innerHTML = "<div class='mensaje-final'>🎉 ¡FELIZ CUMPLEAÑOS! 🎉</div>";
+                    document.getElementById('titulo').textContent = '🎉 ¡SISTEMA DESBLOQUEADO! 🎉';
+                    document.getElementById('barra-llenado').style.width = '100%';
+                    document.getElementById('texto-porcentaje').textContent = '100.00000%';
+                    document.getElementById('zona-progreso').querySelector('span').textContent = '🎉 ACCESO CONCEDIDO';
+                    return;
+                } else {
+                    fechaCumpleanos.setFullYear(fechaActual.getFullYear());
+                    if (fechaCumpleanos < fechaActual) {
+                        fechaCumpleanos.setFullYear(fechaActual.getFullYear() + 1);
+                    }
+                    tiempoRestante = fechaCumpleanos - fechaActual;
+                }
+            }
+
+            const dias = Math.floor(tiempoRestante / (24 * 60 * 60 * 1000));
+            const horas = Math.floor((tiempoRestante % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+            const minutos = Math.floor((tiempoRestante % (60 * 60 * 1000)) / (60 * 1000));
+            const segundos = Math.floor((tiempoRestante % (60 * 1000)) / 1000);
+
+            document.getElementById('dias').textContent = dias.toString().padStart(2, '0');
+            document.getElementById('horas').textContent = horas.toString().padStart(2, '0');
+            document.getElementById('minutos').textContent = minutos.toString().padStart(2, '0');
+            document.getElementById('segundos').textContent = segundos.toString().padStart(2, '0');
+
+            const unAnoMs = 365 * 24 * 60 * 60 * 1000;
+            const progreso = Math.max(0, 100 - (tiempoRestante / unAnoMs) * 100);
+
+            document.getElementById('barra-llenado').style.width = progreso + '%';
+            document.getElementById('texto-porcentaje').textContent = progreso.toFixed(5) + '%';
+        }
+
+        intervalId = setInterval(actualizarContador, 1000);
+        actualizarContador();
+    </script>
+</body>
 </html>
